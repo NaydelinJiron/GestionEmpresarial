@@ -1,0 +1,258 @@
+<!DOCTYPE html> <!-- Define el documento como HTML5 -->
+<html lang="es"> <!-- Idioma principal del contenido: español -->
+<head>
+    <meta charset="UTF-8"> <!-- Codificación de caracteres: UTF-8 -->
+    <title>Lista de Entradas y Salidas</title> <!-- Título que aparece en la pestaña del navegador -->
+
+    <!-- Estilos personalizados del proyecto -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Bootstrap 5 desde CDN para estilos responsivos -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Estilos para DataTables (tablas interactivas) -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+
+    <!-- Íconos de Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <!-- jQuery necesario para DataTables -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scripts de DataTables y botones de exportación -->
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+    <!-- Librerías para exportar PDF y Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> <!-- Para Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script> <!-- Para PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script> <!-- Fuentes PDF -->
+
+    <!-- Script personalizado que gestiona los registros -->
+    <script src="js/registro.js"></script>
+
+    <!-- Script que maneja autenticación y permisos por rol -->
+    <script src="js/auth.js"></script>
+
+    <script>
+        // Verifica si el usuario está autenticado
+        verificarAutenticacion();
+
+        // Se ejecuta cuando el DOM esté completamente cargado
+        document.addEventListener("DOMContentLoaded", () => {
+            aplicarRestriccionesPorRol(); // Aplica restricciones según el rol del usuario
+
+            const rol = localStorage.getItem("rol"); // Recupera el rol del usuario
+            const paginaActual = location.pathname; // Ruta actual del navegador
+
+            // Lista de páginas permitidas para el rol "registrador"
+            const paginasPermitidas = ["registro.html", "indexRegistro.html"];
+            const accesoPermitido = paginasPermitidas.some(pagina => paginaActual.includes(pagina));
+
+            // Si el rol no tiene permiso, redirige
+            if (rol === "registrador" && !accesoPermitido) {
+                alert("Acceso denegado para este rol.");
+                window.location.href = "indexRegistro.html";
+            }
+
+            // Si el usuario es "visor", desactiva todos los formularios
+            if (rol === "visor") {
+                document.querySelectorAll("form input, form select, form button").forEach(el => {
+                    el.disabled = true;
+                });
+            }
+        });
+    </script>
+</head>
+<body class="p-4"> <!-- Agrega padding alrededor del body -->
+
+<!-- Barra de navegación principal -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <!-- Logo del sistema -->
+        <a class="navbar-brand" href="inicio.html">
+            <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Estado" width="30" height="30">
+            Gestión de Datos
+        </a>
+
+        <!-- Botón hamburguesa para vista móvil -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Enlaces de navegación -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto"> <!-- Menú alineado a la derecha -->
+
+                <!-- Enlace a inicio -->
+                <li class="nav-item">
+                    <a class="nav-link" href="inicio.html">
+                        <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Inicio" width="20">
+                        Inicio
+                    </a>
+                </li>
+
+                <!-- Menú Mantenimiento -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="mantenimientoDropdown" role="button" data-bs-toggle="dropdown">
+                        <img src="https://cdn-icons-png.flaticon.com/512/711/711245.png" alt="Mantenimiento" width="20">
+                        Mantenimiento
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="index.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/848/848043.png" alt="Personas" width="20">
+                            Lista de Personas</a></li>
+                        <li><a class="dropdown-item" href="indexOficina.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2910/2910768.png" alt="Oficinas" width="20">
+                            Lista de Oficinas</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menú Registrar -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="registroDropdown" role="button" data-bs-toggle="dropdown">
+                        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Registro" width="20">
+                        Registrar
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="form.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/609/609803.png" alt="Registrar Persona" width="20">
+                            Registrar Persona</a></li>
+                        <li><a class="dropdown-item" href="formOficina.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/455/455705.png" alt="Registrar Oficina" width="20">
+                            Registrar Oficina</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menú Entradas y Salidas -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="registroESDropdown" role="button" data-bs-toggle="dropdown">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3416/3416073.png" alt="Entradas y Salidas" width="20">
+                        Entradas y Salidas
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="registro.html">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Registrar Entrada/Salida
+                        </a></li>
+                        <li><a class="dropdown-item" href="indexRegistro.html">
+                            <i class="bi bi-journal-text me-1"></i> Ver Registros
+                        </a></li>
+                    </ul>
+                </li>
+
+                <!-- Menú Reportes -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="reportesDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-bar-chart"></i> Reportes
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="dashboard.html">
+                            <i class="bi bi-graph-up me-1"></i> Ver Reportes
+                        </a></li>
+                    </ul>
+                </li>
+
+            </ul>
+
+            <!-- Botón de logout -->
+            <button class="btn btn-danger d-flex align-items-center" onclick="logout()">
+                <i class="bi bi-person-circle me-2 fs-5"></i> Log out
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Contenedor principal -->
+<div class="container">
+    <h2 class="text-center mb-4">Registros de Entradas y Salidas</h2> <!-- Título principal -->
+
+    <!-- Tabla para mostrar los registros -->
+    <div class="table-responsive">
+        <table id="tablaRegistros" class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>Persona</th>
+                <th>Tipo</th>
+                <th>Fecha y Hora</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody id="registros-list"></tbody> <!-- Contenido generado dinámicamente por JS -->
+        </table>
+    </div>
+
+    <!-- Botón para agregar nuevo registro -->
+    <div class="text-center mt-4">
+        <a href="registro.html" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Nuevo Registro
+        </a>
+    </div>
+</div>
+
+<!-- Script para cargar los registros desde localStorage y configurar DataTables -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let registros = JSON.parse(localStorage.getItem("registros")) || []; // Lista de registros
+        let personas = JSON.parse(localStorage.getItem("personas")) || []; // Lista de personas
+        let tbody = document.getElementById("registros-list");
+        tbody.innerHTML = ""; // Limpia la tabla
+
+        // Recorre los registros en orden inverso (más recientes primero)
+        [...registros].reverse().forEach((registro, i) => {
+            let persona = personas.find(p => p.id === registro.personaId); // Busca la persona correspondiente
+            let nombrePersona = persona ? persona.nombre : "Desconocido"; // Si no se encuentra, se muestra "Desconocido"
+
+            // Genera la fila HTML
+            let fila = `
+                <tr>
+                    <td>${nombrePersona}</td>
+                    <td>${registro.tipo}</td>
+                    <td>${registro.fechaHora}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarRegistro(${registros.length - 1 - i})">
+                            <i class="bi bi-pencil-square"></i> Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarRegistro(${registros.length - 1 - i})">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </td>
+                </tr>`;
+            tbody.innerHTML += fila;
+        });
+
+        // Inicializa DataTables con configuración personalizada
+        $('#tablaRegistros').DataTable({
+            pageLength: 5,
+            dom: 'Bfrtip',
+            buttons: ['excelHtml5', 'pdfHtml5', 'print'],
+            language: {
+                search: "Buscar:",
+                lengthMenu: "Mostrar _MENU_ registros",
+                info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                paginate: {
+                    first: "Primera",
+                    last: "Última",
+                    next: "Siguiente",
+                    previous: "Anterior"
+                },
+                zeroRecords: "No se encontraron resultados",
+                infoEmpty: "Mostrando 0 a 0 de 0 registros",
+                infoFiltered: "(filtrado de _MAX_ registros totales)"
+            }
+        });
+    });
+</script>
+
+<!-- Pie de página -->
+<footer>
+    &copy; 2025 Progra IV - Todos los derechos reservados
+</footer>
+
+</body>
+</html>

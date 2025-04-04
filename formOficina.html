@@ -1,0 +1,231 @@
+<!DOCTYPE html> <!-- Define el tipo de documento como HTML5 -->
+<html lang="en"> <!-- Comienza el documento HTML con el idioma en inglés -->
+<head>
+    <meta charset="UTF-8"> <!-- Define el conjunto de caracteres como UTF-8 -->
+    <title>Editar Oficina</title> <!-- Título de la pestaña del navegador -->
+
+    <!-- Hoja de estilos personalizada del proyecto -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Importación de Bootstrap CSS desde CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Importación del bundle de Bootstrap JS (incluye Popper) desde CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script personalizado para lógica de oficinas -->
+    <script src="js/oficina.js"></script>
+
+    <!-- Script para verificar autenticación y roles -->
+    <script src="js/auth.js"></script>
+
+    <!-- Íconos de Bootstrap (CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <script>
+        // Llama a la función que valida si el usuario está autenticado
+        verificarAutenticacion();
+
+        // Espera que el DOM cargue antes de aplicar restricciones
+        document.addEventListener("DOMContentLoaded", () => {
+            // Aplica restricciones según el rol del usuario
+            aplicarRestriccionesPorRol();
+
+            // Obtiene el rol desde localStorage
+            const rol = localStorage.getItem("rol");
+            const paginaActual = location.pathname;
+
+            // Lista de páginas permitidas para el rol "registrador"
+            const paginasPermitidas = ["registro.html", "indexRegistro.html"];
+
+            // Verifica si la página actual está permitida
+            const accesoPermitido = paginasPermitidas.some(pagina => paginaActual.includes(pagina));
+
+            // Si el rol es "registrador" y accede a una página no permitida, se redirige
+            if (rol === "registrador" && !accesoPermitido) {
+                alert("Acceso denegado para este rol.");
+                window.location.href = "indexRegistro.html";
+            }
+
+            // Si el rol es "visor", se deshabilitan todos los inputs, selects y botones dentro de formularios
+            if (rol === "visor") {
+                document.querySelectorAll("form input, form select, form button").forEach(el => {
+                    el.disabled = true;
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // Espera que el DOM cargue completamente
+        document.addEventListener("DOMContentLoaded", function () {
+            // Obtiene el índice de la oficina a editar desde localStorage
+            let index = localStorage.getItem("editIndex");
+
+            // Si existe un índice (no es null), procede a obtener datos
+            if (index !== null) {
+                // Obtiene las oficinas desde localStorage y parsea a objeto
+                let oficinas = JSON.parse(localStorage.getItem("oficinas")) || [];
+                let oficina = oficinas[index];
+
+                // Asigna los valores de la oficina a los inputs del formulario
+                document.getElementById("nombreOficina").value = oficina.nombre;
+                document.getElementById("ubicacionOficina").value = oficina.ubicacion;
+            }
+        });
+    </script>
+</head>
+<body>
+
+<!-- Barra de Navegación con Íconos -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark"> <!-- Navbar oscuro, expandible en pantallas grandes -->
+    <div class="container"> <!-- Contenedor centrado -->
+        <a class="navbar-brand" href="inicio.html"> <!-- Marca/logo con redirección al inicio -->
+            <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Estado" width="30" height="30">
+            Gestión de Datos
+        </a>
+        <!-- Botón hamburguesa para colapsar navbar en dispositivos móviles -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Elementos colapsables del navbar -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto"> <!-- Navegación alineada a la derecha -->
+
+                <!-- Enlace a la página de inicio -->
+                <li class="nav-item">
+                    <a class="nav-link" href="inicio.html">
+                        <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Inicio" width="20">
+                        Inicio
+                    </a>
+                </li>
+
+                <!-- Menú desplegable de Mantenimiento -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="mantenimientoDropdown" role="button" data-bs-toggle="dropdown">
+                        <img src="https://cdn-icons-png.flaticon.com/512/711/711245.png" alt="Mantenimiento" width="20">
+                        Mantenimiento
+                    </a>
+                    <ul class="dropdown-menu">
+                        <!-- Opción: Lista de Personas -->
+                        <li><a class="dropdown-item" href="index.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/848/848043.png" alt="Personas" width="20">
+                            Lista de Personas</a></li>
+                        <!-- Opción: Lista de Oficinas -->
+                        <li><a class="dropdown-item" href="indexOficina.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2910/2910768.png" alt="Oficinas" width="20">
+                            Lista de Oficinas</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menú desplegable de Registro -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="registroDropdown" role="button" data-bs-toggle="dropdown">
+                        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Registro" width="20">
+                        Registrar
+                    </a>
+                    <ul class="dropdown-menu">
+                        <!-- Opción: Registrar Persona -->
+                        <li><a class="dropdown-item" href="form.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/609/609803.png" alt="Registrar Persona" width="20">
+                            Registrar Persona</a></li>
+                        <!-- Opción: Registrar Oficina -->
+                        <li><a class="dropdown-item" href="formOficina.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/455/455705.png" alt="Registrar Oficina" width="20">
+                            Registrar Oficina</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menú desplegable de Entradas y Salidas -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="registroESDropdown" role="button" data-bs-toggle="dropdown">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3416/3416073.png" alt="Entradas y Salidas" width="20">
+                        Entradas y Salidas
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="registro.html">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Registrar Entrada/Salida
+                        </a></li>
+                        <li><a class="dropdown-item" href="indexRegistro.html">
+                            <i class="bi bi-journal-text me-1"></i> Ver Registros
+                        </a></li>
+                    </ul>
+                </li>
+
+                <!-- Menú desplegable de Reportes -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="reportesDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-bar-chart"></i> Reportes
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="dashboard.html">
+                            <i class="bi bi-graph-up me-1"></i> Ver Reportes
+                        </a></li>
+                    </ul>
+                </li>
+
+            </ul>
+
+            <!-- Botón de logout -->
+            <button class="btn btn-danger d-flex align-items-center" onclick="logout()">
+                <i class="bi bi-person-circle me-2 fs-5"></i> Log out
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Enlace adicional fuera del navbar (probablemente innecesario si ya está arriba) -->
+<li class="nav-item">
+    <a class="nav-link" href="formOficina.html">Registrar Oficina</a>
+</li>
+
+<!-- Contenedor principal -->
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Editar Oficina</h1> <!-- Título centrado -->
+
+    <!-- Formulario para editar oficina -->
+    <form id=formoficina class="needs-validation" novalidate onsubmit="guardarOficina(event)">
+        <div class="row mb-3">
+
+            <!-- Campo de nombre de oficina -->
+            <div class="col-md-6">
+                <label for="nombreOficina" class="form-label">Nombre de Oficina</label>
+                <input type="text" id="nombreOficina" class="form-control" required/>
+                <div class="invalid-feedback">Invalido</div>
+            </div>
+
+            <!-- Campo de ubicación (latitud, longitud) -->
+            <div class="col-md-6">
+                <label for="ubicacionOficina" class="form-label">Ubicación (coordenadas: lat,long)</label>
+                <input type="text" id="ubicacionOficina" class="form-control" required/>
+                <div class="invalid-feedback">Invalido</div>
+            </div>
+
+            <!-- Campo de cantidad máxima de personas -->
+            <div class=cold-md-6"> <!-- (Error de sintaxis: debería ser class="col-md-6") -->
+                <label for="maximoPersonas" class="form-label">Cantidad máxima de personas</label>
+                <input type="number" id="maximoPersonas" class="form-control" min="1" required/>
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="col-md-12 text-center mt-4">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="bi bi-save me-2 fs-5"></i>Guardar
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='indexOficina.html'">
+                    <i class="bi bi-layers"></i>Cancelar
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Pie de página -->
+<footer>
+    &copy; 2025 Progra IV - Todos los derechos reservados
+</footer>
+
+</body>
+</html>

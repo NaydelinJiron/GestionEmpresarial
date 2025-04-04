@@ -1,0 +1,192 @@
+<!DOCTYPE html> <!-- Define el documento como HTML5 -->
+<html lang="es"> <!-- El contenido principal está en español -->
+<head>
+    <meta charset="UTF-8"> <!-- Codificación de caracteres UTF-8 -->
+    <title>Mapa de Oficina</title> <!-- Título de la página que aparece en la pestaña del navegador -->
+
+    <!-- Bootstrap CSS para estilos y layout responsivo -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons para usar íconos SVG en los botones o textos -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <!-- Hoja de estilos personalizada del proyecto -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Bootstrap JS para activar interactividad de componentes como dropdowns, navbar, etc. -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Verifica si el usuario está autenticado antes de mostrar la página
+        verificarAutenticacion();
+
+        // Cuando el DOM esté cargado, se aplican las restricciones por rol
+        document.addEventListener("DOMContentLoaded", () => {
+            aplicarRestriccionesPorRol();
+
+            const rol = localStorage.getItem("rol"); // Rol del usuario almacenado
+            const paginaActual = location.pathname; // URL actual
+
+            // Lista de páginas a las que puede acceder el rol "registrador"
+            const paginasPermitidas = ["registro.html", "indexRegistro.html"];
+            const accesoPermitido = paginasPermitidas.some(pagina => paginaActual.includes(pagina));
+
+            // Si intenta acceder a una página no permitida, se redirige
+            if (rol === "registrador" && !accesoPermitido) {
+                alert("Acceso denegado para este rol.");
+                window.location.href = "indexRegistro.html";
+            }
+
+            // Si el usuario tiene rol "visor", desactiva formularios (aunque esta página no los tiene)
+            if (rol === "visor") {
+                document.querySelectorAll("form input, form select, form button").forEach(el => {
+                    el.disabled = true;
+                });
+            }
+        });
+    </script>
+</head>
+<body class="p-4"> <!-- Clase Bootstrap para padding general -->
+
+<!-- Barra de navegación superior -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <!-- Logo y nombre de la aplicación -->
+        <a class="navbar-brand" href="inicio.html">
+            <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Estado" width="30" height="30">
+            Gestión de Datos
+        </a>
+
+        <!-- Botón de colapso para vista móvil -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Contenido del menú -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto"> <!-- Menú alineado a la derecha -->
+
+                <!-- Inicio -->
+                <li class="nav-item">
+                    <a class="nav-link" href="inicio.html">
+                        <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Inicio" width="20">
+                        Inicio
+                    </a>
+                </li>
+
+                <!-- Menú Mantenimiento -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="mantenimientoDropdown" role="button" data-bs-toggle="dropdown">
+                        <img src="https://cdn-icons-png.flaticon.com/512/711/711245.png" alt="Mantenimiento" width="20">
+                        Mantenimiento
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="index.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/848/848043.png" alt="Personas" width="20">
+                            Lista de Personas</a></li>
+                        <li><a class="dropdown-item" href="indexOficina.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2910/2910768.png" alt="Oficinas" width="20">
+                            Lista de Oficinas</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menú Registrar -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="registroDropdown" role="button" data-bs-toggle="dropdown">
+                        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Registro" width="20">
+                        Registrar
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="form.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/609/609803.png" alt="Registrar Persona" width="20">
+                            Registrar Persona</a></li>
+                        <li><a class="dropdown-item" href="formOficina.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/455/455705.png" alt="Registrar Oficina" width="20">
+                            Registrar Oficina</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menú Entradas y Salidas -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="registroESDropdown" role="button" data-bs-toggle="dropdown">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3416/3416073.png" alt="Entradas y Salidas" width="20">
+                        Entradas y Salidas
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="registro.html">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Registrar Entrada/Salida
+                        </a></li>
+                        <li><a class="dropdown-item" href="indexRegistro.html">
+                            <i class="bi bi-journal-text me-1"></i> Ver Registros
+                        </a></li>
+                    </ul>
+                </li>
+
+                <!-- Menú Reportes -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="reportesDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-bar-chart"></i> Reportes
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="dashboard.html">
+                            <i class="bi bi-graph-up me-1"></i> Ver Reportes
+                        </a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- Botón para cerrar sesión -->
+            <button class="btn btn-danger d-flex align-items-center" onclick="logout()">
+                <i class="bi bi-person-circle me-2 fs-5"></i> Log out
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Título de la sección de mapa -->
+<h2 class="titulo-mapa">Ubicación de la Oficina</h2>
+
+<!-- Contenedor del mapa de Google Maps -->
+<div id="map"></div>
+
+<!-- Botón para volver a la página anterior -->
+<div class="boton-volver">
+    <button onclick="window.history.back()">Volver</button>
+</div>
+
+<!-- Script que inicializa el mapa de Google Maps -->
+<script>
+    function initMap() {
+        const params = new URLSearchParams(window.location.search); // Obtiene los parámetros de la URL
+        const lat = parseFloat(params.get("lat")); // Obtiene latitud
+        const lng = parseFloat(params.get("lng")); // Obtiene longitud
+
+        // Valida que las coordenadas sean válidas
+        if (isNaN(lat) || isNaN(lng)) {
+            alert("Coordenadas inválidas");
+            return;
+        }
+
+        const location = { lat: lat, lng: lng }; // Crea el objeto de ubicación
+
+        // Crea e inicializa el mapa centrado en la ubicación
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 16,
+            center: location,
+        });
+
+        // Agrega un marcador en la ubicación especificada
+        new google.maps.Marker({
+            position: location,
+            map: map,
+        });
+    }
+</script>
+
+<!-- API de Google Maps con tu clave de acceso -->
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBANgijAy6lmbM0y-HQnYK8wfmPtQz8MCU&callback=initMap">
+</script>
+
+</body>
+</html>

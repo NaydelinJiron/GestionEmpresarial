@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Indica que el documento está codificado en UTF-8 -->
+    <meta charset="UTF-8">
+    <!-- Define el título que aparecerá en la pestaña del navegador -->
+    <title>Crud de personas</title>
+
+    <!-- Enlace a los estilos personalizados del proyecto -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Enlace al framework de diseño Bootstrap desde CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Enlace a los íconos de Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <!-- Carga Bootstrap JavaScript para funcionalidades como menús desplegables -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+
+    <!-- Carga el archivo JS donde se implementa la lógica del CRUD de personas -->
+    <script src="js/persona.js"></script>
+    <!-- Carga el archivo JS donde se gestiona la autenticación y control de roles -->
+    <script src="js/auth.js"></script>
+
+    <script>
+        // Verifica si el usuario está autenticado al cargar la página
+        verificarAutenticacion();
+
+        // Aplica las restricciones según el rol del usuario autenticado
+        document.addEventListener("DOMContentLoaded", () => {
+            aplicarRestriccionesPorRol();
+
+            const rol = localStorage.getItem("rol");
+            const paginaActual = location.pathname;
+
+            // Redirección automática si el rol "registrador" intenta acceder a una página no permitida
+            const paginasPermitidas = ["registro.html", "indexRegistro.html"];
+            const accesoPermitido = paginasPermitidas.some(pagina => paginaActual.includes(pagina));
+
+            if (rol === "registrador" && !accesoPermitido) {
+                alert("Acceso denegado para este rol.");
+                window.location.href = "indexRegistro.html";
+            }
+
+            // Si el usuario es "visor", desactiva todos los elementos del formulario
+            if (rol === "visor") {
+                document.querySelectorAll("form input, form select, form button").forEach(el => {
+                    el.disabled = true;
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // Evento que se ejecuta al cargar completamente el DOM
+        document.addEventListener("DOMContentLoaded", function () {
+            // Obtiene el índice de edición desde localStorage, si existe
+            let index = localStorage.getItem("editIndex");
+
+            // Si hay un índice, significa que se va a editar una persona existente
+            if (index !== null) {
+                let personas = JSON.parse(localStorage.getItem("personas")) || []; // Obtiene las personas almacenadas
+                let persona = personas[index]; // Toma la persona correspondiente
+
+                // Rellena automáticamente los campos del formulario con los datos existentes
+                document.getElementById("id").value = persona.id;
+                document.getElementById("nombre").value = persona.nombre;
+                document.getElementById("email").value = persona.email;
+                document.getElementById("direccion").value = persona.direccion;
+                document.getElementById("fechaNacimiento").value = persona.fechaNacimiento;
+            }
+        });
+    </script>
+</head>
+<body>
+
+<!-- Barra de navegación superior con enlaces a las diferentes secciones del sistema -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="inicio.html">
+            <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Estado" width="30" height="30">
+            Gestión de Datos
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+
+                <!-- Enlace a la página de inicio -->
+                <li class="nav-item">
+                    <a class="nav-link" href="inicio.html">
+                        <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Inicio" width="20">
+                        Inicio
+                    </a>
+                </li>
+
+                <!-- Menú desplegable de mantenimiento (personas y oficinas) -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="mantenimientoDropdown" role="button" data-bs-toggle="dropdown">
+                        <img src="https://cdn-icons-png.flaticon.com/512/711/711245.png" alt="Mantenimiento" width="20">
+                        Mantenimiento
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="index.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/848/848043.png" alt="Personas" width="20">
+                            Lista de Personas</a></li>
+                        <li><a class="dropdown-item" href="indexOficina.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2910/2910768.png" alt="Oficinas" width="20">
+                            Lista de Oficinas</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menú para registrar nueva persona u oficina -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="registroDropdown" role="button" data-bs-toggle="dropdown">
+                        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Registro" width="20">
+                        Registrar
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="form.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/609/609803.png" alt="Registrar Persona" width="20">
+                            Registrar Persona</a></li>
+                        <li><a class="dropdown-item" href="formOficina.html">
+                            <img src="https://cdn-icons-png.flaticon.com/512/455/455705.png" alt="Registrar Oficina" width="20">
+                            Registrar Oficina</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menú para registrar entradas/salidas y ver registros -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="registroESDropdown" role="button" data-bs-toggle="dropdown">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3416/3416073.png" alt="Entradas y Salidas" width="20">
+                        Entradas y Salidas
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="registro.html">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Registrar Entrada/Salida
+                        </a></li>
+                        <li><a class="dropdown-item" href="indexRegistro.html">
+                            <i class="bi bi-journal-text me-1"></i> Ver Registros
+                        </a></li>
+                    </ul>
+                </li>
+
+                <!-- Enlace al módulo de reportes -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="reportesDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-bar-chart"></i> Reportes
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="dashboard.html">
+                            <i class="bi bi-graph-up me-1"></i> Ver Reportes
+                        </a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- Botón para cerrar sesión -->
+            <button class="btn btn-danger d-flex align-items-center" onclick="logout()">
+                <i class="bi bi-person-circle me-2 fs-5"></i> Log out
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Contenedor principal del formulario -->
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Crud de personas</h1>
+
+    <!-- Formulario con clase de validación de Bootstrap y validación personalizada -->
+    <form id="formpersona" class="needs-validation" novalidate onsubmit="guardarPersona(event)">
+        <div class="row mb-3">
+
+            <!-- Campo: ID de la persona -->
+            <div class="col-md-6">
+                <label for="id" class="form-label">Id</label>
+                <input type="text" id="id" class="form-control" required/>
+                <div class="invalid-feedback">Invalido</div>
+            </div>
+
+            <!-- Campo: Nombre de la persona -->
+            <div class="col-md-6">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" id="nombre" class="form-control" required/>
+                <div class="invalid-feedback">Invalido</div>
+            </div>
+
+            <!-- Campo: Correo electrónico -->
+            <div class="col-md-6">
+                <label for="email" class="form-label">Correo</label>
+                <input type="email" id="email" class="form-control" required/>
+                <div class="invalid-feedback">Invalido</div>
+            </div>
+
+            <!-- Campo: Dirección -->
+            <div class="col-md-6">
+                <label for="direccion" class="form-label">Dirección</label>
+                <input type="text" id="direccion" class="form-control" required/>
+                <div class="invalid-feedback">Invalido</div>
+            </div>
+
+            <!-- Campo: Fecha de nacimiento -->
+            <div class="col-md-6">
+                <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+                <input type="date" id="fechaNacimiento" class="form-control" required/>
+                <div class="invalid-feedback">Invalido</div>
+            </div>
+
+            <!-- Campo: Teléfono -->
+            <div class="col-md-6">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input type="tel" class="form-control" id="telefono" required>
+            </div>
+
+            <!-- Campo: Cargo u ocupación -->
+            <div class="col-md-6">
+                <label for="cargo" class="form-label">Cargo</label>
+                <input type="text" class="form-control" id="cargo" required>
+            </div>
+
+            <!-- Campo: Estado (activo/inactivo) -->
+            <div class="col-md-6">
+                <label for="estado" class="form-label">Estado</label>
+                <select class="form-select" id="estado" required>
+                    <option value="">Seleccione un estado</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Inactivo">Inactivo</option>
+                </select>
+            </div>
+
+            <!-- Campo: Oficina asignada (se llena dinámicamente) -->
+            <div class="col-md-6">
+                <label for="oficina" class="form-label">Oficina</label>
+                <select class="form-select" id="oficina" required>
+                    <option value="">Seleccione una oficina</option>
+                </select>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="col-md-12 text-center mt-4">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="bi bi-save me-2 fs-5"></i>Guardar
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">
+                    <i class="bi bi-layers"></i>Cancelar
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Pie de página -->
+<footer>
+    &copy; 2025 Progra IV - Todos los derechos reservados
+</footer>
+
+</body>
+</html>
