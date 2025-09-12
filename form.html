@@ -40,10 +40,7 @@
             // Redirección automática si el rol "registrador" intenta acceder a una página no permitida
             const paginasPermitidas = ["registro.html", "indexRegistro.html"];
             const accesoPermitido = paginasPermitidas.some(pagina => paginaActual.includes(pagina));
-             // Redirección automática si el rol "registrador" intenta acceder a una página no permitida
-            const hola = ["login.html", "indexRegistro.html"];
-            const patito = paginasPermitidas.some(pagina => paginaActual.includes(pagina));
-
+            
 
             if (rol === "registrador" && !accesoPermitido) {
                 alert("Acceso denegado para este rol.");
