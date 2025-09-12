@@ -14,8 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    const labels = []; // Nombres de las personas (para etiquetas del gráfico)
-    const data = []; // Cantidad de ingresos por persona
+    const labels = []; /// holaaaaa bebe como estas ?
+    const data = []; 
 
     // Asocia los IDs con nombres y organiza los datos para el gráfico
     Object.entries(conteo).forEach(([id, cantidad]) => {
