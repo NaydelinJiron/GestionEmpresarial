@@ -8,7 +8,7 @@ const usuarios = [
 // Función para iniciar sesión
 function login(event) {
     event.preventDefault(); // Previene el comportamiento por defecto del formulario (recargar la página)
-
+  
     let username = document.getElementById("username").value; // Obtiene el valor ingresado en el campo de usuario
     let password = document.getElementById("password").value; // Obtiene el valor ingresado en el campo de contraseña
 
