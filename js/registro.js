@@ -13,6 +13,7 @@ function cargarPersonasEnCombo() {
         opcion.text = `${persona.nombre} (${persona.id})`; // Texto visible: nombre e ID
         combo.appendChild(opcion); // Agrega la opción al combo
     });
+   //7Nuevoooo
 }
 
 // Mostrar automáticamente la oficina asociada al seleccionar persona
