@@ -6,7 +6,7 @@ function cargarPersonasEnCombo() {
     combo.innerHTML = ""; // Limpia el combo por si se recarga
     combo.innerHTML = '<option value="">Seleccione una persona</option>'; // Agrega opción por defecto
 
-    // Muestra primero las personas más recientes
+
     [...personas].reverse().forEach(persona => {
         let opcion = document.createElement("option"); // Crea opción nueva
         opcion.value = persona.id; // Valor de la opción: ID de la persona

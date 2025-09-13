@@ -10,7 +10,7 @@ function cargarPersonas() {
         return;
     }
 
-    // Muestra las personas más recientes primero, sin alterar los índices originales
+   
     [...personas].reverse().forEach((persona, visibleIndex) => {
         const realIndex = personas.length - 1 - visibleIndex; // Calcula el índice real
 
